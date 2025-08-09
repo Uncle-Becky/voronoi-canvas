@@ -1,0 +1,239 @@
+:root {
+  --bg: #0b0d10;
+  --panel: #12161b;
+  --ink: #e6ebf2;
+  --muted: #7a8699;
+  --accent: #66a6ff;
+  --accent2: #d04f6f;
+  --border: #1d2630;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: linear-gradient(180deg, #0b0d10, #0b0d10 60%, #10151b);
+  color: var(--ink);
+  font: 14px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+    Arial;
+}
+header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  position: sticky;
+  top: 0;
+  z-index: 3;
+}
+.wrap {
+  max-width: 2000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+h1 {
+  font-size: 16px;
+  margin: 0;
+  letter-spacing: 0.2px;
+  flex: 1;
+}
+.sub {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Canvas */
+.stage {
+  padding: 16px;
+  width: 90vw;
+  max-width: 1200px;
+  aspect-ratio: 16/9;
+  margin: auto;
+}
+canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  border: 1px solid #202735;
+  cursor: crosshair;
+}
+.hint {
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* Hamburger */
+.hambtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: #202f4d;
+  border: 1px solid var(--border);
+  cursor: pointer;
+}
+.hambtn:hover {
+  filter: brightness(1.1);
+}
+.hambtn:focus-visible {
+  outline: 2px solid var(--accent);
+}
+.icon {
+  width: 22px;
+  height: 22px;
+}
+.stroke {
+  stroke: var(--ink);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  transition: transform 0.25s ease, opacity 0.2s ease;
+}
+.hambtn[aria-expanded="true"] .top {
+  transform: translateY(6px) rotate(45deg);
+}
+.hambtn[aria-expanded="true"] .mid {
+  opacity: 0;
+}
+.hambtn[aria-expanded="true"] .bot {
+  transform: translateY(-6px) rotate(-45deg);
+}
+
+/* Drawer */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: saturate(120%) blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 2;
+}
+.scrim.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+.drawer {
+  position: fixed;
+  top: 0;
+  right: -360px;
+  width: 340px;
+  max-width: 90vw;
+  height: 100dvh;
+  background: #0d121b;
+  border-left: 1px solid var(--border);
+  box-shadow: -20px 0 40px rgba(0, 0, 0, 0.35);
+  transition: right 0.25s ease;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+}
+.drawer.open {
+  right: 0;
+}
+.drawer header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  background: #0f1520;
+}
+.drawer h2 {
+  font-size: 14px;
+  margin: 0;
+  flex: 1;
+}
+.panel {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: auto;
+}
+.flag {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: #0e1320;
+}
+.flag.col {
+  flex-direction: column;
+  align-items: stretch;
+}
+.flag .rowline {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.flag input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent);
+}
+.flag select {
+  width: 100%;
+  background: #0b1220;
+  color: var(--ink);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px;
+}
+.btn {
+  background: var(--accent);
+  color: #051426;
+  border: 0;
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  flex: 1;
+}
+.btn.secondary {
+  background: #243142;
+  color: #d4def0;
+}
+.btn:disabled {
+  background: #243142;
+  color: var(--muted);
+  cursor: not-allowed;
+}
+
+details.tests {
+  margin: 16px 0;
+  background: #0e1320;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px;
+}
+details.tests summary {
+  cursor: pointer;
+}
+.test-pass {
+  color: #8fff8f;
+}
+.test-fail {
+  color: #ff8f8f;
+}
+code {
+  background: #0b1220;
+  padding: 2px 6px;
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stroke,
+  .drawer,
+  .scrim {
+    transition: none;
+  }
+}

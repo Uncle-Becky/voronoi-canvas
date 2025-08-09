@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://code.jquery.com https://unpkg.com https://d3js.org https://threejs.org https://cdn.plot.ly https://stackpath.bootstrapcdn.com https://maps.googleapis.com https://cdn.tailwindcss.com https://ajax.googleapis.com https://kit.fontawesome.com https://cdn.datatables.net https://maxcdn.bootstrapcdn.com https://code.highcharts.com https://tako-static-assets-production.s3.amazonaws.com https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com https://pfst.cf2.poecdn.net https://puc.poecdn.net https://i.imgur.com https://wikimedia.org https://*.icons8.com https://*.giphy.com https://picsum.photos https://images.unsplash.com; frame-src 'self' https://www.youtube.com https://trytako.com; child-src 'self'; manifest-src 'self'; worker-src 'self'; upgrade-insecure-requests; block-all-mixed-content;"
+    />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Voronoi Canvas (Relaxation + Drag &amp; Drop + New Shaders)</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <div class="wrap">
+        <button
+          id="hamburger"
+          class="hambtn"
+          aria-haspopup="true"
+          aria-controls="controlsDrawer"
+          aria-expanded="false"
+          aria-label="Open controls"
+        >
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="stroke top" d="M4 7h16"></path>
+            <path class="stroke mid" d="M4 12h16"></path>
+            <path class="stroke bot" d="M4 17h16"></path>
+          </svg>
+        </button>
+        <h1>Voronoi Canvas</h1>
+        <p class="sub">Lloyd's Relaxation • Drag &amp; Drop • New Shaders</p>
+      </div>
+    </header>
+    <main class="wrap stage">
+      <canvas
+        id="voronoiCanvas"
+        width="2000"
+        height="1200"
+        aria-label="Interactive Voronoi diagram"
+      ></canvas>
+      <div class="hint">
+        Click to add a site. Drag sites to move them. Right-click a site to
+        delete it.
+      </div>
+      <details class="tests" id="testsPanel">
+        <summary><strong>Test Results</strong> (click to expand)</summary>
+        <div id="testsOutput">No tests run yet.</div>
+      </details>
+    </main>
+
+    <!-- Drawer + Scrim -->
+    <div id="scrim" class="scrim" aria-hidden="true"></div>
+    <aside id="controlsDrawer" class="drawer" aria-label="Controls drawer">
+      <header>
+        <h2>Controls</h2>
+        <button
+          id="closeDrawer"
+          class="hambtn"
+          aria-label="Close controls"
+          aria-controls="controlsDrawer"
+          aria-expanded="true"
+        >
+          <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path class="stroke top" d="M4 7h16"></path>
+            <path class="stroke mid" d="M4 12h16"></path>
+            <path class="stroke bot" d="M4 17h16"></path>
+          </svg>
+        </button>
+      </header>
+      <div class="panel">
+        <div class="flag col">
+          <div class="rowline">
+            <input type="checkbox" id="edgesChk" checked="" /><label
+              for="edgesChk"
+              >Edges</label
+            >
+            <input type="checkbox" id="sitesChk" checked="" /><label
+              for="sitesChk"
+              >Sites</label
+            >
+            <input type="checkbox" id="highlightChk" checked="" /><label
+              for="highlightChk"
+              >Highlight</label
+            >
+            <input type="checkbox" id="glowChk" /><label for="glowChk"
+              >Glow</label
+            >
+          </div>
+        </div>
+        <div class="flag col">
+          <div class="rowline" title="Shader mode">
+            <label for="shaderMode">Shader</label>
+            <select id="shaderMode">
+              <option value="off">off</option>
+              <option value="noise" selected="">noise (fbm)</option>
+              <option value="distance">distance</option>
+              <option value="spiral">spiral</option>
+              <option value="cellId">cell index</option>
+            </select>
+          </div>
+          <div class="rowline">
+            <input id="animChk" type="checkbox" checked="" /><label
+              for="animChk"
+              >Animate</label
+            >
+          </div>
+        </div>
+        <div class="flag col">
+          <label>Hue <span id="hueVal" style="float: right">210°</span></label>
+          <input
+            id="hueRange"
+            type="range"
+            min="0"
+            max="360"
+            step="1"
+            value="210"
+          />
+          <label
+            >Spread <span id="spreadVal" style="float: right">90°</span></label
+          >
+          <input
+            id="spreadRange"
+            type="range"
+            min="0"
+            max="240"
+            step="1"
+            value="90"
+          />
+          <label
+            >Saturation <span id="satVal" style="float: right">70%</span></label
+          >
+          <input
+            id="satRange"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="70"
+          />
+          <label
+            >Lightness
+            <span id="lightVal" style="float: right">55%</span></label
+          >
+          <input
+            id="lightRange"
+            type="range"
+            min="5"
+            max="95"
+            step="1"
+            value="55"
+          />
+        </div>
+        <div class="flag col">
+          <label
+            >Scale <span id="scaleVal" style="float: right">120</span></label
+          >
+          <input
+            id="scaleRange"
+            type="range"
+            min="1"
+            max="300"
+            step="1"
+            value="120"
+          />
+          <label
+            >Speed <span id="speedVal" style="float: right">0.60</span></label
+          >
+          <input
+            id="speedRange"
+            type="range"
+            min="0"
+            max="2"
+            step="0.01"
+            value="0.6"
+          />
+        </div>
+        <div class="flag col">
+          <div class="rowline">
+            <button id="relaxBtn" class="btn">Relax Once</button>
+          </div>
+          <div class="rowline">
+            <input id="relaxChk" type="checkbox" /><label for="relaxChk"
+              >Continuous Relaxation</label
+            >
+          </div>
+        </div>
+        <div class="flag col">
+          <label
+            >Edge thickness
+            <span id="edgeVal" style="float: right">1.0</span></label
+          >
+          <input
+            id="edgeRange"
+            type="range"
+            min="0.5"
+            max="3"
+            step="0.1"
+            value="1"
+          />
+          <label
+            >Site radius
+            <span id="siteVal" style="float: right">2.5</span></label
+          >
+          <input
+            id="siteRange"
+            type="range"
+            min="0"
+            max="8"
+            step="0.1"
+            value="2.5"
+          />
+        </div>
+        <div class="flag row">
+          <button id="randomBtn" class="btn" title="Generate random sites">
+            Randomize 50
+          </button>
+          <button
+            id="clearBtn"
+            class="btn secondary"
+            title="Keep only the mouse‑tracked site"
+          >
+            Clear
+          </button>
+          <button
+            id="runTestsBtn"
+            class="btn secondary"
+            title="Run built‑in tests"
+          >
+            Run tests
+          </button>
+        </div>
+      </div>
+    </aside>
+    <script src="app.js"></script>
+  </body>
+</html>
