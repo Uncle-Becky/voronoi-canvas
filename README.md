@@ -1,2 +1,3 @@
 # voronoi-canvas
-Created with CodeSandbox
+Created with imagination
+and vanilla
