@@ -10,7 +10,7 @@
     "html",
     "css"
   ],
-  "author": "Ives van Hoorne",
+  "author": "Uncle Becky",
   "license": "MIT",
   "devDependencies": {
     "serve": "11.2.0"
